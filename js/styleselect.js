@@ -1,3 +1,4 @@
+
 // UMD module from From https://github.com/umdjs/umd/blob/master/returnExports.js
 // From 'if the module has no dependencies' example.
 (function (root, factory) {
@@ -15,6 +16,19 @@
   }
 }(this, function () {
 // End of UMD module
+
+  
+  /**
+   * @description Adds multiple (or single) event handlers on a given element.
+   * @param {HTMLElement} [el] - Element to listen from.
+   * @param {string} evts - Space separated string of event names.
+   * @param {Function} fun - Function to use as an event handler.
+   */
+  var onEvt = function(el, evts, fun) {
+    (evts.split(" ")).forEach(function(evt){
+      el.addEventListener(evt, fun, false);
+    });
+  }
 
 	// Quick aliases and polyfills if needed
 	var query = document.querySelector.bind(document);
@@ -151,10 +165,10 @@
 
 	// The 'styleSelect' main function
 	// selector:String - CSS selector for the select box to style
-	return function(selector) {
+	return function(selector, allowTouchDevices) {
 
 		// Use native selects (which pop up large native UIs to go through the options ) on iOS/Android
-		if ( navigator.userAgent.match( /iPad|iPhone|Android/i ) ) {
+		if ( !allowTouchDevices && navigator.userAgent.match( /iPad|iPhone|Android/i ) ) {
 			return
 		}
 
@@ -348,13 +362,14 @@
 		});
 
 		// Clicking outside of the styled select box closes any open styled select boxes
-		query('body').addEventListener('click', function(ev){
-
+    var events = "click";
+    if(allowTouchDevices) events += " touchend";
+    
+    onEvt(query('body'), events, function(ev){
 			if ( ! isAncestorOf(ev.target, '.style-select', true) ) {
 				closeAllStyleSelects();
 			}
-		})
-
+		});
 	};
 
 // Close UMD module
