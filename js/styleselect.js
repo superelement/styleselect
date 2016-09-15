@@ -135,6 +135,21 @@
 		}
 	}
 
+
+  // Cycles through elements in `triggerTargetList` and returns `true` if `target` element matches one of them
+  var inTriggerTargetList = function(target, triggerTargetList) {
+
+    if(triggerTargetList && triggerTargetList.length) {
+      var inList = false;
+      triggerTargetList.forEach(function(el) {
+        if(el === target || el.contains(target)) inList = true;
+      });
+
+      if(inList) return true;
+    }
+    return false
+  }
+
 	// Return true if any ancestor matches selector
 	// Borrowed from ancestorMatches() from agave.js (MIT)
 	var isAncestorOf = function(element, selector, includeSelf) {
@@ -165,7 +180,10 @@
 
 	// The 'styleSelect' main function
 	// selector:String - CSS selector for the select box to style
-	return function(selector, allowTouchDevices) {
+  // allowTouchDevices: boolean - Optionally pass `true` to treat touch devices the same as desktop (and not use native select element UI).
+  // customCloseEvent: string - Optionally provide a custom event to listen to (on the `select` element), that will cause the dropdown to collapse. A space separated string can be used for multiple events.
+  // triggerTargetList: HTMLElement[] - Optionally provide a list of elements to ignore when clicking off the dropdown.
+	return function(selector, allowTouchDevices, customCloseEvent, triggerTargetList) {
 
 		// Use native selects (which pop up large native UIs to go through the options ) on iOS/Android
 		if ( !allowTouchDevices && navigator.userAgent.match( /iPad|iPhone|Android/i ) ) {
@@ -361,15 +379,51 @@
 			}
 		});
 
-		// Clicking outside of the styled select box closes any open styled select boxes
-    var events = "click";
-    if(allowTouchDevices) events += " touchend";
-    
-    onEvt(query('body'), events, function(ev){
+		/**
+     * Clicking outside of the styled select box closes any open styled select boxes.
+     * Vertical touch scrolling positions recorded so that scrolling doesn't close the dropdown, but tapping does.
+     */
+    var events = "click", touchY;
+    if(allowTouchDevices) {
+      
+      events += " touchend";
+
+      onEvt(query('body'), "touchstart", function(ev){
+        if(ev.touches && ev.touches.length) {
+          touchY = ev.touches[0].clientY;
+        }
+      });
+    }
+       
+    onEvt(query('body'), events, function(ev) {
+
+      // First cycles through elements in `triggerTargetList` and returns early if matched
+      if(inTriggerTargetList(ev.target, triggerTargetList)) return;
+
 			if ( ! isAncestorOf(ev.target, '.style-select', true) ) {
-				closeAllStyleSelects();
+
+        // if a touch event is used, checks to see if it is different from the `touchstart` coords (ie an attempted scroll has occurred)
+        if(ev.changedTouches && ev.changedTouches.length) {
+          if(ev.changedTouches[0].clientY !== touchY) {
+            touchY = null;
+            return;
+          }
+        }
+
+        closeAllStyleSelects();
+        touchY = null;
 			}
 		});
+
+    if(customCloseEvent) {
+      if(typeof customCloseEvent !== "string") {
+        console.warn("styleSelect", "Property 'customCloseEvent' must be a string.", customCloseEvent);
+        return;
+      }
+
+      // add custom event handler for collapsing the dropdown
+      onEvt(realSelect, customCloseEvent, closeAllStyleSelects);
+    }
 	};
 
 // Close UMD module
