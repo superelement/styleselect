@@ -183,7 +183,7 @@
   	// allowTouchDevices: boolean - Optionally pass `true` to treat touch devices the same as desktop (and not use native select element UI).
   	// customCloseEvent: string - Optionally provide a custom event to listen to (on the `select` element), that will cause the dropdown to collapse. A space separated string can be used for multiple events.
   	// triggerTargetList: HTMLElement[] - Optionally provide a list of elements to ignore when clicking off the dropdown.
-	// textWrap: boolean   - Optionally wraps the dropdown elements in an anchor tag
+	// textWrap: [object]   - Optionally wraps the dropdown elements in custom HTML. Example: `{ open: "<div>", close:"</div>" }`
 	return function(selector, allowTouchDevices, customCloseEvent, triggerTargetList, textWrap) {
 
 		// Use native selects (which pop up large native UIs to go through the options ) on iOS/Android
@@ -226,9 +226,8 @@
             }
 
             // Continue building optionsHTML
-			if(textWrap){
-				var wrapClass = "ss-option-wrap";
-				optionsHTML += '<div class="' + cssClass + '" data-value="' + value + '"><span class="' + wrapClass + '">' + text + '</span></div>';
+            if (textWrap && typeof textWrap === "object") {
+                optionsHTML += '<div class="' + cssClass + '" data-value="' + value + '">' + textWrap.open + text + textWrap.close + '</span></div>';
 			} else {
 				optionsHTML += '<div class="' + cssClass + '" data-value="' + value + '">' + text + '</div>';
 			}
