@@ -215,6 +215,18 @@
 				value = realOption.getAttribute('value') || '',
                 cssClass = 'ss-option';
 
+            // gathers other attributes
+			var len = realOption.attributes.length,
+                attr, attrStr = "";
+			for(var i=0; i<len; i++) {
+			    attr = realOption.attributes[i];
+
+			    if (attr.name !== "value" && attr.name !== "class") {
+			        //console.log("attr", attr);
+			        attrStr += attr.name + '="' + attr.value + '" ';
+			    }
+			}
+
 			if (index === selectedIndex) {
 				// Mark first item as selected-option - this is where we store state for the styled select box
 				// aria-hidden=true so screen readers ignore the styles selext box in favor of the real one (which is visible by default)
@@ -227,9 +239,9 @@
 
             // Continue building optionsHTML
             if (textWrap && typeof textWrap === "object") {
-                optionsHTML += '<div class="' + cssClass + '" data-value="' + value + '">' + textWrap.open + text + textWrap.close + '</span></div>';
+                optionsHTML += '<div class="' + cssClass + '" data-value="' + value + '" ' + attrStr + '>' + textWrap.open + text + textWrap.close + '</span></div>';
 			} else {
-				optionsHTML += '<div class="' + cssClass + '" data-value="' + value + '">' + text + '</div>';
+                optionsHTML += '<div class="' + cssClass + '" data-value="' + value + '" ' + attrStr + '>' + text + '</div>';
 			}
 		});
 		optionsHTML += '</div>';
