@@ -298,7 +298,7 @@
 			});
 
 			// Tick and highlight the option that's currently in use
-			if ( styleSelectOption.dataset.value === realSelect.value ) {
+            if ( styleSelectOption.dataset.value === realSelect.value ) {
 				highlightedOptionIndex = index;
 				styleSelectOption.classList.add('ticked');
 				styleSelectOption.classList.add('highlighted')
