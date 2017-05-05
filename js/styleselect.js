@@ -332,6 +332,8 @@
 				// If we're closed and about to open, close other style selects on the page
 				closeAllStyleSelects(styledSelectBox);
 			}
+
+			if (realSelect.disabled) return;
 			// Then toggle open/close
 			styledSelectBox.classList.toggle('open');
 		};
