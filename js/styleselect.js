@@ -197,6 +197,8 @@
 			uuid = makeUUID(),
 			styleSelectHTML = '<div class="style-select" aria-hidden="true" data-ss-uuid="' + uuid + '">';
 
+		if (selectedIndex === -1) realSelect.selectedIndex = selectedIndex = 0;
+
 		// The index of the item that's being highlighted by the mouse or keyboard
 		var highlightedOptionIndex;
 		var highlightedOptionIndexMax = realOptions.length - 1;
