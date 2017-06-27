@@ -338,6 +338,13 @@
 			if (realSelect.disabled) return;
 			// Then toggle open/close
 			styledSelectBox.classList.toggle('open');
+
+		    // un-highlight options when opening
+			if (styledSelectBox.classList.contains('open')) {
+			    styleSelectOptions.forEach(function (option, index) {
+			        option.classList.remove('highlighted');
+			    })
+			}
 		};
 
 		// When a styled select box is clicked
