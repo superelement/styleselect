@@ -183,8 +183,9 @@
   	// allowTouchDevices: boolean - Optionally pass `true` to treat touch devices the same as desktop (and not use native select element UI).
   	// customCloseEvent: string - Optionally provide a custom event to listen to (on the `select` element), that will cause the dropdown to collapse. A space separated string can be used for multiple events.
   	// triggerTargetList: HTMLElement[] - Optionally provide a list of elements to ignore when clicking off the dropdown.
-	// textWrap: [object]   - Optionally wraps the dropdown elements in custom HTML. Example: `{ open: "<div>", close:"</div>" }`
-	return function(selector, allowTouchDevices, customCloseEvent, triggerTargetList, textWrap) {
+    // textWrap: [object]   - Optionally wraps the dropdown elements in custom HTML. Example: `{ open: "<div>", close:"</div>" }`
+    // unhighlightOnOpen: [boolean] - Optionally clear all all highlighted items when opening the dropdown
+	return function(selector, allowTouchDevices, customCloseEvent, triggerTargetList, textWrap, unhighlightOnOpen) {
 
 		// Use native selects (which pop up large native UIs to go through the options ) on iOS/Android
 		if ( !allowTouchDevices && navigator.userAgent.match( /iPad|iPhone|Android/i ) ) {
@@ -339,8 +340,9 @@
 			// Then toggle open/close
 			styledSelectBox.classList.toggle('open');
 
+
 		    // un-highlight options when opening
-			if (styledSelectBox.classList.contains('open')) {
+			if (unhighlightOnOpen && styledSelectBox.classList.contains('open')) {
 			    styleSelectOptions.forEach(function (option, index) {
 			        option.classList.remove('highlighted');
 			    })
