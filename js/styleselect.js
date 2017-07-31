@@ -12,7 +12,7 @@
         module.exports = factory();
     } else {
         // Browser globals (root is window)
-        root.returnExports = factory();
+        root.styleSelect = factory();
   }
 }(this, function () {
 // End of UMD module
