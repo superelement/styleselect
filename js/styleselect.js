@@ -192,7 +192,8 @@
 			return
 		}
 
-		var realSelect = query(selector),
+	  //check if "selector" is a DOM element
+	  var realSelect = selector.tagName ? selector : query(selector),
 			realOptions = realSelect.children,
 			selectedIndex = realSelect.selectedIndex,
 			uuid = makeUUID(),
