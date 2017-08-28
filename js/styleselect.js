@@ -1,3 +1,4 @@
+// depends on element.closest polyfill
 
 // UMD module from From https://github.com/umdjs/umd/blob/master/returnExports.js
 // From 'if the module has no dependencies' example.
@@ -234,7 +235,7 @@
 			if (index === selectedIndex) {
 				// Mark first item as selected-option - this is where we store state for the styled select box
 				// aria-hidden=true so screen readers ignore the styles selext box in favor of the real one (which is visible by default)
-				selectedOptionHTML = '<div class="ss-selected-option" tabindex="0" data-value="' + value + '">' + text + '</div>'
+				selectedOptionHTML = '<div class="ss-selected-option-wrap"><div class="ss-selected-option" tabindex="0" data-value="' + value + '">' + text + '</div></div>'
 			}
 
             if (realOption.disabled) {
@@ -292,7 +293,8 @@
 
             styleSelectOption.addEventListener('click', function(ev) {
 				var target = ev.target,
-					styledSelectBox = target.parentNode.parentNode,
+					// styledSelectBox = target.parentNode.parentNode,
+					styledSelectBox = target.closest('.style-select'),
 					uuid = styledSelectBox.getAttribute('data-ss-uuid'),
 					newValue = target.getAttribute('data-value'),
 					newLabel = target.textContent;
@@ -310,7 +312,9 @@
 
 			// Important: we can't use ':hover' as the keyboard and default value can also set the highlight
 			styleSelectOption.addEventListener('mouseover', function(ev){
-				styleSelectOption.parentNode.childNodes.forEach(function(sibling, index){
+				var styledSelectBox = styleSelectOption.closest('.style-select');
+				styledSelectBox.childNodes.forEach(function(sibling, index){
+				// styleSelectOption.parentNode.childNodes.forEach(function(sibling, index){
 					if ( sibling === ev.target ) {
 						sibling.classList.add('highlighted');
 						highlightedOptionIndex = index;
@@ -355,12 +359,14 @@
 		styledSelectedOption.addEventListener('click', function(ev) {
 			ev.preventDefault();
 			ev.stopPropagation();
-			toggleStyledSelect(ev.target.parentNode);
+			toggleStyledSelect(ev.target.closest('.style-select'));
+			// toggleStyledSelect(ev.target.parentNode);
 		});
 
 		// Keyboard handling
 		styledSelectedOption.addEventListener('keydown', function(ev) {
-			var styledSelectBox = ev.target.parentNode;
+			// var styledSelectBox = ev.target.parentNode;
+			var styledSelectBox = ev.target.closest('.style-select');
 
 			switch (ev.keyCode) {
 				case KEYCODES.SPACE:
@@ -399,7 +405,8 @@
 					break;
 				// User has picked an item from the keyboard
 				case KEYCODES.ENTER:
-					var highlightedOption = styledSelectedOption.parentNode.querySelectorAll('.ss-option')[highlightedOptionIndex],
+					// var highlightedOption = styledSelectedOption.parentNode.querySelectorAll('.ss-option')[highlightedOptionIndex],
+					var highlightedOption = styledSelectedOption.closest('.style-select').querySelectorAll('.ss-option')[highlightedOptionIndex],
 						newValue = highlightedOption.dataset.value,
 						newLabel = highlightedOption.textContent;
 

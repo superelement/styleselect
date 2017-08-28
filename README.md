@@ -7,6 +7,7 @@
  - **Usable with the keyboard** - Appears in tab index, space shows and hides the options, up and down arrow changes the highlight option, enter selects the currently highlighted option.
  - **Stylable** - designed for easy incorporation into your own look and feel. SCSS, free of magic numbers, CSS 'triangles', images, and other hacks. 
  - **Accessable** - people using screen readers simply experience the regular, unstyled select box.
+ - **Polyfills** - you'll need a polyfill for element.closest
 
 ## Demo
 
