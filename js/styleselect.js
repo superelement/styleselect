@@ -450,19 +450,26 @@
 
         closeAllStyleSelects();
         touchY = null;
-			}
-		});
+	  }
+	});
 
-    if(customCloseEvent) {
-      if(typeof customCloseEvent !== "string") {
-        console.warn("styleSelect", "Property 'customCloseEvent' must be a string.", customCloseEvent);
-        return;
-      }
+	if(customCloseEvent) {
+		if(typeof customCloseEvent !== "string") {
+			console.warn("styleSelect", "Property 'customCloseEvent' must be a string.", customCloseEvent);
+			return;
+		}
 
-      // add custom event handler for collapsing the dropdown
-      onEvt(realSelect, customCloseEvent, closeAllStyleSelects);
-    }
-	};
+		// add custom event handler for collapsing the dropdown
+		onEvt(realSelect, customCloseEvent, closeAllStyleSelects);
+	}
+	
+	return {
+		destroy: function() {
+			styledSelect.parentElement.removeChild(styledSelect);
+			//console.log("styleSelect destoy", styledSelect, realSelect)
+		}
+	}
+  }; // end main function
 
 // Close UMD module
 }));
