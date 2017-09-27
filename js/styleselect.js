@@ -312,8 +312,11 @@
 
 			// Important: we can't use ':hover' as the keyboard and default value can also set the highlight
 			styleSelectOption.addEventListener('mouseover', function(ev){
-				var styledSelectBox = styleSelectOption.closest('.style-select');
-				styledSelectBox.childNodes.forEach(function(sibling, index){
+				var dropdown = styleSelectOption.closest('.ss-dropdown');
+				// console.log("styleselect mouseover", styledSelectBox);
+
+				dropdown.childNodes.forEach(function(sibling, index){
+					// console.log("styleselect mouseover", sibling, ev.target);
 				// styleSelectOption.parentNode.childNodes.forEach(function(sibling, index){
 					if ( sibling === ev.target ) {
 						sibling.classList.add('highlighted');
@@ -421,37 +424,39 @@
      * Clicking outside of the styled select box closes any open styled select boxes.
      * Vertical touch scrolling positions recorded so that scrolling doesn't close the dropdown, but tapping does.
      */
-    var events = "click", touchY;
-    if(allowTouchDevices) {
-      
-      events += " touchend";
-
-      onEvt(query('body'), "touchstart", function(ev){
+	var events = "click", touchY;
+	var body = query('body');
+	var touchStartEvtHnd = function(ev){
         if(ev.touches && ev.touches.length) {
           touchY = ev.touches[0].clientY;
         }
-      });
-    }
-       
-    onEvt(query('body'), events, function(ev) {
+	};
+	var clickEvtHnd = function(ev) {
 
-      // First cycles through elements in `triggerTargetList` and returns early if matched
-      if(inTriggerTargetList(ev.target, triggerTargetList)) return;
+		// First cycles through elements in `triggerTargetList` and returns early if matched
+		if(inTriggerTargetList(ev.target, triggerTargetList)) return;
 
 			if ( ! isAncestorOf(ev.target, '.style-select', true) ) {
 
-        // if a touch event is used, checks to see if it is different from the `touchstart` coords (ie an attempted scroll has occurred)
-        if(ev.changedTouches && ev.changedTouches.length) {
-          if(ev.changedTouches[0].clientY !== touchY) {
-            touchY = null;
-            return;
-          }
-        }
+		// if a touch event is used, checks to see if it is different from the `touchstart` coords (ie an attempted scroll has occurred)
+		if(ev.changedTouches && ev.changedTouches.length) {
+			if(ev.changedTouches[0].clientY !== touchY) {
+			touchY = null;
+			return;
+			}
+		}
 
-        closeAllStyleSelects();
-        touchY = null;
-	  }
-	});
+		closeAllStyleSelects();
+		touchY = null;
+		}
+	};
+
+    if(allowTouchDevices) {
+      events += " touchend";
+      onEvt(body, "touchstart", touchStartEvtHnd);
+    }
+       
+    onEvt(body, events, clickEvtHnd);
 
 	if(customCloseEvent) {
 		if(typeof customCloseEvent !== "string") {
@@ -465,8 +470,16 @@
 	
 	return {
 		destroy: function() {
+			realSelect.removeAttribute("data-ss-uuid");
+			realSelect.removeAttribute("aria-hidden");
 			styledSelect.parentElement.removeChild(styledSelect);
 			//console.log("styleSelect destoy", styledSelect, realSelect)
+			
+			// removes any listeners
+			body.removeEventListener("touchstart", touchStartEvtHnd);
+			body.removeEventListener("click", clickEvtHnd);
+			body.removeEventListener("touchend", clickEvtHnd);
+			if( customCloseEvent) realSelect.removeEventListener(customCloseEvent, closeAllStyleSelects);
 		}
 	}
   }; // end main function
